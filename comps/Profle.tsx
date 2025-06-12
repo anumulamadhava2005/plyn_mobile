@@ -17,6 +17,46 @@ export default function ProfileScreen({ navigation }: any) {
   const [isSaving, setIsSaving] = useState(false);
   const [isMapDialogOpen, setIsMapDialogOpen] = useState(false);
 
+
+  useEffect(() => {
+    const fetchCoins = async () => {
+      if (user) {
+        try {
+          const coins = await getUserCoins(user.id);
+          setUserCoins(coins);
+        } catch (error) {
+          console.error('Error fetching user coins:', error);
+        }
+      }
+    };
+
+    fetchCoins();
+    fetchMerchantData();
+    if (isMerchant) {
+      loadSettings();
+      loadMerchantAddress();
+    }
+    setLoading(false);
+  }, [user]);
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+  };
+  const fetchMerchantData = async () => {
+    if (!user?.id) return;
+    const { data, error } = await supabase
+      .from('merchants')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching merchant data:', error);
+    } else {
+      console.log('Merchant data:', data);
+      setMerchantData(data);
+    }
+  };
+
   const [settings, setSettings] = useState<any>({
     merchant_id: user?.id,
     total_workers: 1,
@@ -50,47 +90,6 @@ export default function ProfileScreen({ navigation }: any) {
     confirm_account_number: '',
     account_holder_name: ''
   });
-
-  useEffect(() => {
-    const fetchCoins = async () => {
-      if (user) {
-        try {
-          const coins = await getUserCoins(user.id);
-          setUserCoins(coins);
-        } catch (error) {
-          console.error('Error fetching user coins:', error);
-        }
-      }
-    };
-
-    fetchCoins();
-    fetchMerchantData();
-    if (isMerchant) {
-      loadSettings();
-      loadMerchantAddress();
-    }
-    setLoading(false);
-  }, [user]);
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-  };
-
-  const fetchMerchantData = async () => {
-    if (!user?.id) return;
-    const { data, error } = await supabase
-      .from('merchants')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (error) {
-      console.error('Error fetching merchant data:', error);
-    } else {
-      console.log('Merchant data:', data);
-      setMerchantData(data);
-    }
-  };
 
   const loadSettings = async () => {
     setIsLoading(true);
@@ -188,7 +187,7 @@ export default function ProfileScreen({ navigation }: any) {
           </CardHeader>
 
           <CardContent className="flex flex-col items-center space-y-4">
-            <View style={{
+            {/*<View style={{
               width: '100%',
               backgroundColor: 'rgba(0,122,255,0.1)',
               borderRadius: 12,
@@ -202,7 +201,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <Text style={{ fontWeight: '500', fontSize: 16 }}>PLYN Coins</Text>
               </View>
               <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{userCoins}</Text>
-            </View>
+            </View>*/}
             <View style={{ width: '100%', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-around' }}>
               {isMerchant && (
                 <TouchableOpacity

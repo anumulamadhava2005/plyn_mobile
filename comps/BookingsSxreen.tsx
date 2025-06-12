@@ -13,7 +13,7 @@ const MyBookings = () => {
     const { user, loading } = useAuth();
     const [bookings, setBookings] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedTab, setSelectedTab] = useState<'upcoming' | 'completed' | 'cancelled'>('upcoming');
+    const [selectedTab, setSelectedTab] = useState<'upcoming' | 'completed' | 'cancelled' | string>('upcoming');
 
     useEffect(() => {
         loadBookings();
@@ -98,12 +98,12 @@ const MyBookings = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#fff', paddingTop: 50 }}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 }}>
                 My Bookings
             </Text>
             <Tabs
                 value={selectedTab}
-                onValueChange={(val: 'upcoming' | 'completed' | 'cancelled') => setSelectedTab(val)}
+                onValueChange={(val: 'upcoming' | 'completed' | 'cancelled' | string) => setSelectedTab(val)}
             >
                 <TabsList>
                 <TabsTrigger value="upcoming" label="Upcoming" />

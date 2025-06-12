@@ -20,13 +20,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import GradientText from './GradientText';
 import { useFonts } from 'expo-font';
 
-export default function LoginScreen({ navigation }: any) {
+export default function EmailLogin({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<any>('');
-  const [otp, setOtp] = useState('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleEmailLogin = async () => {
     setLoading(true);
@@ -91,26 +90,44 @@ export default function LoginScreen({ navigation }: any) {
             <Text style={styles.title}>Book Your Perfect Look in Minutes!</Text>
             <TextInput
               style={styles.input}
-              placeholder="+91 98765 43210"
+              placeholder="example@domain.com"
               placeholderTextColor="#d9d9d9"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              keyboardType="phone-pad"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
               autoCapitalize="none"
             />
 
-            {/* Phone Login Button */}
-            <TouchableOpacity style={styles.button} onPress={() => onPhoneSubmit(phoneNumber)} disabled={loading}>
+            <View>
+              <TextInput
+                style={styles.input}
+                placeholder="password"
+                placeholderTextColor="#d9d9d9"
+                value={password}
+                onChangeText={setPassword}
+                autoCapitalize="none"
+                textContentType="password"
+                secureTextEntry={!showPassword} // Toggles password visibility
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: 10, top: 15 }}
+              >
+                <Text style={{ color: '#8A2BE2', fontWeight: 'bold' }}>
+                  {showPassword ? 'Hide' : 'Show'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.button} onPress={handleEmailLogin} disabled={loading}>
               <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Continue'}</Text>
             </TouchableOpacity>
             <Text style={styles.orText}>OR</Text>
 
-            {/* Email Login Button */}
-            <TouchableOpacity style={[styles.button, { backgroundColor: '#b289d9' }]} onPress={() => navigation.navigate('EmailLogin')} disabled={loading}>
-              <Text style={[styles.buttonText]}>{loading ? 'Loading...' : 'Continue with Email'}</Text>
+            <TouchableOpacity style={[styles.button, { backgroundColor: '#b289d9' }]} onPress={() => navigation.goBack()} disabled={loading}>
+              <Text style={[styles.buttonText]}>{loading ? 'Loading...' : 'Continue with Phone'}</Text>
             </TouchableOpacity>
 
-            {/* Google Login Button */}
             <Text style={styles.loginText}>
               Don't have an account?{' '}
               <Text style={styles.loginLink} onPress={() => navigation.navigate('Signup')}>

@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../integrations/supabase/client'; // your configured Supabase client
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SignupScreen({ navigation }: any) {
     const [username, setUsername] = useState('');
@@ -97,7 +98,7 @@ export default function SignupScreen({ navigation }: any) {
             }
 
             console.log("Sign up successful:", data);
-            await supabase.auth.signInWithPassword({email, password})
+            await supabase.auth.signInWithPassword({ email, password })
 
             return data;
         } catch (error: any) {
@@ -107,86 +108,87 @@ export default function SignupScreen({ navigation }: any) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80' }}
-                style={styles.background}
-            />
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+            <LinearGradient
+                // pink-violet gradient
+                colors={['black', '#8A2BE2']}
+                style={{ flex: 1, backgroundColor: 'transparent', marginTop: 60 }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+            >
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={{ flex: 1 }}
-                    keyboardVerticalOffset={60}
+                    style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0)' }}
                 >
-                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-                        <View style={styles.overlay}>
-                            <Text style={styles.title}>Create a New Account</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Username"
-                                placeholderTextColor="#aaa"
-                                value={username}
-                                onChangeText={setUsername}
-                                keyboardType="default"
-                                autoCapitalize="none"
-                            />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Email"
-                                placeholderTextColor="#aaa"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                            />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Phone number"
-                                placeholderTextColor="#aaa"
-                                value={phno}
-                                onChangeText={setPhno}
-                                keyboardType="phone-pad"
-                                autoCapitalize="none"
-                            />
+                    <View style={styles.overlay}>
+                        <Text style={styles.title}>Create a New Account</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Username"
+                            placeholderTextColor="#aaa"
+                            value={username}
+                            onChangeText={setUsername}
+                            keyboardType="default"
+                            autoCapitalize="none"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            placeholderTextColor="#aaa"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Phone number"
+                            placeholderTextColor="#aaa"
+                            value={phno}
+                            onChangeText={setPhno}
+                            keyboardType="phone-pad"
+                            autoCapitalize="none"
+                        />
 
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Password"
-                                placeholderTextColor="#aaa"
-                                secureTextEntry
-                                value={password}
-                                onChangeText={setPassword}
-                            />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Password"
+                            placeholderTextColor="#aaa"
+                            secureTextEntry
+                            value={password}
+                            onChangeText={setPassword}
+                        />
 
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Confirm Password"
-                                placeholderTextColor="#aaa"
-                                secureTextEntry
-                                value={confirmPassword}
-                                onChangeText={setConfirmPassword}
-                            />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Confirm Password"
+                            placeholderTextColor="#aaa"
+                            secureTextEntry
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                        />
 
-                            <TouchableOpacity style={styles.button} onPress={handleSignup}>
-                                <Text style={styles.buttonText}>Sign Up</Text>
-                            </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: '#b289d9' }]} onPress={handleSignup}>
+                            <Text style={styles.buttonText}>Sign Up</Text>
+                        </TouchableOpacity>
 
-                            <Text style={styles.loginText}>
-                                Already have an account?{' '}
-                                <Text onPress={() => navigation.goBack()} style={styles.loginLink}>
-                                    Log In
-                                </Text>
+                        <Text style={styles.loginText}>
+                            Already have an account?{' '}
+                            <Text onPress={() => navigation.goBack()} style={styles.loginLink}>
+                                Log In
                             </Text>
-                        </View>
-                    </ScrollView>
+                        </Text>
+                    </View>
                 </KeyboardAvoidingView>
-            </TouchableWithoutFeedback>
-        </SafeAreaView>
+            </LinearGradient>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1,
+    backgroundColor: 'rgba(0,0,0,1)',
+    paddingTop: 60, },
     background: {
         width: '100%',
         height: '110%',
@@ -196,6 +198,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         padding: 20,
+        paddingBottom: 80,
         backgroundColor: 'rgba(0,0,0,0.4)',
     },
     title: {

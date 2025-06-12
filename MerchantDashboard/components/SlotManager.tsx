@@ -58,6 +58,7 @@ const SlotManager: React.FC<SlotManagerProps> = ({
 
             console.log(`Retrieved ${data?.length || 0} slots`);
             setSlots(data || []);
+            console.log(slots)
 
         } catch (error: any) {
             console.error('Error fetching slots:', error);
@@ -161,24 +162,15 @@ const SlotManager: React.FC<SlotManagerProps> = ({
                         ) : error ? (
                             <CardTitle style={{ color: "red", textAlign: "center", marginVertical: 16 }}>{error}</CardTitle>
                         ) : slots.length > 0 ? (
-                            <ScrollView style={{ maxHeight: 550 }}>
+                            <ScrollView style={{maxHeight: 280}}>
                             {slots.map((slot) => (
-                                <Badge
-                                    key={slot.id}
-                                    variant={slot.is_booked ? "secondary" : "outline"}
-                                    style={{
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        paddingTop: 8,
-                                        paddingBottom: 8,
-                                        paddingLeft: 12,
-                                        paddingRight: 12,
-                                        marginBottom: 8,
-                                    }}
-                                    >
-                                        {slot.start_time} - {slot.end_time}
-                                </Badge>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    style={{ marginBottom: 8 }}
+                                >
+                                    {slot.start_time} - {slot.end_time}
+                                </Button>
                             ))}
                             </ScrollView>
                         ) : (

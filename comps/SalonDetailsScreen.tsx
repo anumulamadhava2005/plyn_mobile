@@ -53,6 +53,24 @@ const SalonDetailsScreen = ({ route, navigation }: any) => {
     });
   };
 
+  const handleAddToFavourite = async () => {
+    try {
+        const { data: userData } = await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from('favorites')
+        .insert([{ user_id: userData?.user?.id as string, salon_id: salonId as string, created_at: new Date().toISOString() }]);
+
+      if (error) {
+        console.error('Error adding to favourites:', error.message);
+        return;
+      }
+
+      console.log('Salon added to favourites:', data);
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       {salon && (
@@ -61,7 +79,9 @@ const SalonDetailsScreen = ({ route, navigation }: any) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <AntDesign name="left" size={24} color="black" />
             </TouchableOpacity>
-            <AntDesign name="hearto" size={24} color="black" />
+            <TouchableOpacity onPress={() => handleAddToFavourite()}>
+              <AntDesign name="hearto" size={24} color="black" />
+            </TouchableOpacity>
           </View>
           <Image
             source={{

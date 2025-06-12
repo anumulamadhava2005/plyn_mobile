@@ -424,11 +424,6 @@ const BookingScreen = ({ route, navigation }: any) => {
             title: 'Pay Online Now',
             subtitle: 'Secure your booking instantly',
           },
-          {
-            value: 'salon',
-            title: 'Pay at Salon',
-            subtitle: 'Settle payment after your appointment',
-          },
         ].map((option) => (
           <TouchableOpacity
             key={option.value}

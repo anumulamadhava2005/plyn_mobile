@@ -8,9 +8,9 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images//splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/images/splashscreen_image.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#000"
     },
     "ios": {
       "supportsTablet": true
@@ -21,7 +21,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.mao1729.plyn"
+      "package": "com.mao1729.plyn",
+      "googleServicesFile": "D:/plyn_v2/plyn/google-services.json"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

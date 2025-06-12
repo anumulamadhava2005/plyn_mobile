@@ -23,6 +23,7 @@
     "date-fns": "^4.1.0",
     "expo": "~53.0.9",
     "expo-dev-client": "~5.1.8",
+    "expo-linear-gradient": "~14.1.4",
     "expo-location": "~18.1.4",
     "expo-router": "~5.0.6",
     "expo-status-bar": "~2.2.3",

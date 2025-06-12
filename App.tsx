@@ -25,6 +25,12 @@ import PaymentScreen from './comps/Payment'
 import MapScreen from './comps/MapScreen'
 import ProfileScreen from './comps/Profle'
 import MerchantDashboard from './MerchantDashboard/index'
+import FavoritesScreen from './comps/FavouritesScreen'
+import PhoneVerify from './comps/PhoneVerify'
+import { useFonts } from 'expo-font';
+import AddDetails from './comps/AddDetails'
+import { ActivityIndicator } from 'react-native-paper'
+import EmailLogin from './comps/EmailLogin'
 
 const Stack = createNativeStackNavigator()
 
@@ -40,6 +46,13 @@ export default function App() {
       setSession(session)
     })
   }, [])
+    const [fontsLoaded] = useFonts({
+      Speedy: require('@/assets/fonts/SpeedyRegular-7BLoE.ttf'),
+    });
+
+    if(!fontsLoaded) return (
+      <ActivityIndicator size={'large'} color='black' />
+    )
 
   return (
     <AuthProvider>
@@ -56,12 +69,15 @@ export default function App() {
               <Stack.Screen name="MapScreen" component={MapScreen} />
               <Stack.Screen name="Profile" component={ProfileScreen} />
               <Stack.Screen name="MerchantDashboard" component={MerchantDashboard} />
+              <Stack.Screen name="Favourites" component={FavoritesScreen} />
+              <Stack.Screen name="AddDetails" component={AddDetails} />
             </>
           ) : (
             <>
               <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen name="Verify" component={VerifyScreen} />
+              <Stack.Screen name="Verify" component={PhoneVerify} />
               <Stack.Screen name="Signup" component={SignupScreen} />
+              <Stack.Screen name="EmailLogin" component={EmailLogin} />
             </>
           )}
         </Stack.Navigator>

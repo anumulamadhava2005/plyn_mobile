@@ -117,6 +117,27 @@ export type Database = {
           },
         ]
       }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          salon_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          salon_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          salon_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       merchant_settings: {
         Row: {
           account_holder_name: string | null

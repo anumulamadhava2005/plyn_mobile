@@ -9,12 +9,12 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import HomeScreen from './HomeScreen';
 import MyBookings from './BookingsSxreen';
 import ProfileScreen from './Profle';
+import FavoritesScreen from './FavouritesScreen';
 
 const Tab = createBottomTabNavigator()
 
 // const HomeScreen = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Home</Text></View>
 const BookingsScreen = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Bookings</Text></View>
-const FavouritesScreen = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Favourites</Text></View>
 
 
 export default function HomeTabs() {
@@ -30,7 +30,7 @@ export default function HomeTabs() {
             <Feather name="calendar" size={24} color="black" />
         )
       }, headerShown: false}}/>
-      <Tab.Screen name="Favourites" component={FavouritesScreen} options={{tabBarIcon: () => {
+      <Tab.Screen name="Favourites" component={FavoritesScreen} options={{tabBarIcon: () => {
         return (
             <MaterialIcons name="favorite-border" size={24} color="black" />
         )

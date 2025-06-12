@@ -7,25 +7,58 @@ import {
     TouchableOpacity,
     Image,
     ScrollView,
+    ImageBackground,
+    Alert,
 } from 'react-native';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../integrations/supabase/client';
 import { StatusBar } from 'expo-status-bar';
-import { useNavigation } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import GradientText from './GradientText';
 
 export default function HomeScreen({ navigation }: any) {
     const [location, setLocation] = useState<string>('Fetching...');
-    const [services, setServices] = useState<string[]>([]);
+    const [services, setServices] = useState<any[]>([]);
     const [allServicesData, setAllServicesData] = useState<any[]>([]);
     const [salons, setSalons] = useState<any[]>([]);
     const [selectedService, setSelectedService] = useState<string | null>(null);
-
+    const [selectedGender, setSelectedGender] = useState<'all' | 'male' | 'female'>('all');
+    const [loading, setLoading] = useState<boolean|false>(false);
 
     useEffect(() => {
+        checkUserProfile();
         fetchLocation();
         fetchAllServicesAndSalons();
     }, []);
+    
+    const checkUserProfile = async () => {
+      setLoading(true);
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+    
+      if (userError || !user) {
+        setLoading(false);
+        Alert.alert('Error', 'Unable to fetch user information.');
+        return;
+      }
+    
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*, phone_number')
+        .eq('id', user.id)
+        .single();
+    
+      setLoading(false);
+    
+      if (error || !data || data.phone_number === null) {
+        navigation.navigate('AddDetails', { userId: user.id,phoneNumber: user.phone });
+      } else {
+        navigation.navigate('Home');
+      }
+    };
 
     const fetchLocation = async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
@@ -52,8 +85,71 @@ export default function HomeScreen({ navigation }: any) {
         setAllServicesData(servicesData);
 
         // Extract unique service names
-        const uniqueNames = Array.from(new Set(servicesData.map((s: any) => s.name)));
-        setServices(uniqueNames);
+        const staticCategories = [
+            {
+                name: "Hair & styling",
+                gender: "unisex",
+                backgroundImage: require('../assets/images/hairstyle.png'),
+            },
+            {
+                name: "Nails",
+                gender: "female",
+                backgroundImage: require('../assets/images/nails.png'),
+            },
+            {
+                name: "Eyebrows & eyelashes",
+                gender: "female",
+                backgroundImage: require('../assets/images/eyebrows.png'),
+            },
+            {
+                name: "Massage",
+                gender: "unisex",
+                backgroundImage: require('../assets/images/massage.png'),
+            },
+            {
+                name: "Barbering",
+                gender: "male",
+                backgroundImage: require('../assets/images/haircut.png'),
+            },
+            {
+                name: "Hair removal",
+                gender: "female",
+                backgroundImage: require('../assets/images/remove.png'),
+            },
+            {
+                name: "Facials & skincare",
+                gender: "unisex",
+                backgroundImage: require('../assets/images/facial.png'),
+            },
+            {
+                name: "Injectables & fillers",
+                gender: "unisex",
+                backgroundImage: require('../assets/images/inject.png'),
+            },
+            {
+                name: "Body",
+                gender: "unisex",
+                backgroundImage: require('../assets/images/body.png'),
+            },
+            {
+                name: "Tattoo & piercing",
+                gender: "unisex",
+                backgroundImage: require('../assets/images/tatoo.png'),
+            },
+            {
+                name: "Makeup",
+                gender: "female",
+                backgroundImage: require('../assets/images/makeup.png'),
+            },
+            {
+                name: "Medical & dental",
+                gender: "unisex",
+                backgroundImage: require('../assets/images/dental.png'),
+            },
+        ];
+
+        // Set categories (services)
+        setServices(staticCategories);
 
         // Get all merchants
         const { data: merchantsData, error: merchantsError } = await supabase
@@ -65,6 +161,12 @@ export default function HomeScreen({ navigation }: any) {
         }
     };
 
+    const genderOptions = ['all','male', 'female'];
+
+    const filteredServices = services.filter(service =>
+        selectedGender === 'all' || service.gender === selectedGender || service.gender === 'unisex'
+    );
+
     const getSalonServices = (merchantId: string) => {
         return allServicesData
             .filter((s) => s.merchant_id === merchantId)
@@ -72,12 +174,15 @@ export default function HomeScreen({ navigation }: any) {
     };
 
     const handleServicePress = (serviceName: string) => {
+        console.log('pressed',serviceName)
         if (selectedService === serviceName) {
             setSelectedService(null); // Toggle off
         } else {
             setSelectedService(serviceName); // Toggle on
+            console.log('set',selectedService);
         }
     };
+    console.log(' ',selectedService)
 
     const filteredSalons = selectedService
         ? salons.filter((salon) =>
@@ -88,11 +193,17 @@ export default function HomeScreen({ navigation }: any) {
         : salons;
 
     return (
+    <LinearGradient
+        colors={['#fbc2eb', '#a6c1ee']} // pink-violet gradient
+        style={{ flex: 1 }}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+    >
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80, marginTop: 10 }}>
             <StatusBar style='dark' />
 
             <View style={{ margin: 20, marginHorizontal: 0 }}>
-                <Text style={{ fontSize: 30, fontWeight: 'bold' }}>PLYN</Text>
+                  <GradientText text='PLYN' fontSize={30} />
             </View>
             <View style={styles.header}>
                 <Ionicons name="location-outline" size={20} color="#555" />
@@ -124,22 +235,62 @@ export default function HomeScreen({ navigation }: any) {
                 </View>
             </View>
 
-            {/* Services */}
-            <Text style={styles.sectionTitle}>Services</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.servicesContainer}>
-                {services.map((service, index) => (
+            {/* Gender Tabs */}
+            <View style={styles.genderTabs}>
+                {genderOptions.map((gender: any) => (
                     <TouchableOpacity
-                        key={index}
+                        key={gender}
+                        onPress={() => setSelectedGender(gender)}
                         style={[
-                            styles.servicePill,
-                            selectedService === service && { backgroundColor: '#dbeafe' },
+                            styles.genderTab,
+                            selectedGender === gender && styles.genderTabActive,
                         ]}
-                        onPress={() => handleServicePress(service)}
                     >
-                        <Text style={styles.serviceText}>{service}</Text>
+                        <Text
+                            style={[
+                                styles.genderTabText,
+                                selectedGender === gender && styles.genderTabTextActive,
+                            ]}
+                        >
+                            {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                        </Text>
                     </TouchableOpacity>
                 ))}
-            </ScrollView>
+            </View>
+            {/* Services */}
+            <Text style={styles.sectionTitle}>Services</Text>
+            <View style={styles.rowsWrapper}>
+                {[0, 1].map((row) => (
+                    <View key={row} style={styles.row}>
+                        {filteredServices
+                            .filter((_, index) => index % 2 === row)
+                            .map((service, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={[
+                                        styles.servicePill,
+                                        selectedService === service.name && { backgroundColor: '#dbeafe' },
+                                    ]}
+                                    onPress={() => handleServicePress(service.name)}
+                                >
+                                    <View style={styles.banner}>
+                                        <Image
+                                            source={service.backgroundImage}
+                                            style={[styles.bannerImage, { height: 80, marginLeft: 60 }]}
+                                            resizeMode="contain"
+                                        />
+                                        <View style={[styles.bannerTextWrapper, { height: 80, backgroundColor: 'rgba(0,0,0,0)' }]}>
+                                            <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 14, maxWidth: '70%' }}>
+                                                {service.name}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                    </View>
+                ))}
+            </View>
+
 
             {/* Nearby Salons */}
             <View style={styles.salonHeader}>
@@ -173,11 +324,12 @@ export default function HomeScreen({ navigation }: any) {
                 </TouchableOpacity>
             ))}
         </ScrollView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#fff', padding: 16 },
+    container: { flex: 1, backgroundColor: 'transparent', padding: 16 },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -212,7 +364,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
     bannerTextWrapper: {
-        backgroundColor: 'rgba(0,0,0,0.4)',
+        backgroundColor: 'rgba(0,0,0,0.6)',
         padding: 16,
         height: 150,
         justifyContent: 'center',
@@ -254,14 +406,16 @@ const styles = StyleSheet.create({
     },
     servicePill: {
         backgroundColor: '#f1f5f9',
-        paddingVertical: 10,
-        paddingHorizontal: 16,
         borderRadius: 20,
         marginRight: 10,
+        height: 80,
+        marginBottom: 10,
+        maxWidth: '100%'
     },
     serviceText: {
         color: '#000',
         fontWeight: '500',
+        maxWidth: '80%'
     },
     salonHeader: {
         flexDirection: 'row',
@@ -308,5 +462,35 @@ const styles = StyleSheet.create({
     servicesOffered: {
         color: '#6b7280',
         fontSize: 12,
+    },
+    rowsWrapper: {
+        flexDirection: 'row',
+    },
+    row: {
+        flexDirection: 'column',
+        width: '52%'
+    },
+    genderTabs: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    genderTab: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        backgroundColor: '#f0f0f0',
+        marginHorizontal: 5,
+    },
+    genderTabActive: {
+        backgroundColor: '#3b82f6',
+    },
+    genderTabText: {
+        fontSize: 14,
+        color: '#555',
+    },
+    genderTabTextActive: {
+        color: '#fff',
+        fontWeight: 'bold',
     },
 });
